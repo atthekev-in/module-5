@@ -10,10 +10,10 @@ import java.io.FileReader;
 
 public class DB {
 
-	private static final String dbUrl = "jdbc:postgresql://image-gallery.cunmw1tbyasz.us-east-2.rds.amazonaws.com/";
+	private static final String dbUrl = "jdbc:postgresql://" + Secrets.getSecretImageGallery("sec-db-url") + "/";	
 	private Connection connection;
-        private JSONObject getSecret() {
-	String s = Secrets.getSecretImageGallery();
+    private JSONObject getSecret() {
+	String s = Secrets.getSecretImageGallery("sec-ig-image_gallery");
 	return new JSONObject(s);
         }
 

@@ -18,4 +18,4 @@
              - "{{ postgres_tag_sg.group_id }}"
              - "{{ nginx_sg.group_id }}"
              - "{{ dev_sg.group_id }}"
-        user_data: IyEvdXNyL2Jpbi9iYXNoCgoKZXhwb3J0IElNQUdFX0dBTExFUllfQk9PVFNUUkFQX1ZFUlNJT049IjEuMCIKYXdzIHMzIGNwIHMzOi8vZWR1LmF1LmNjLmt6dzAwNjguaW1hZ2UtZ2FsbGVyeS1jb25maWcvZWMyLXByb2QtbGF0ZXN0LnNoIC4vCi91c3IvYmluL2Jhc2ggZWMyLXByb2QtbGF0ZXN0LnNo
+        user_data: "{{ lookup('file', './scripts/ec2_user_data.sh') | b64encode }}"

@@ -7,9 +7,8 @@ import java.util.Base64;
 
 public class Secrets {
 
-    public static String getSecretImageGallery() {
+    public static String getSecretImageGallery(String secretName) {
 
-	String secretName = "sec-image_gallery2";
 	Region region = Region.US_EAST_2;
 
 	// Create a Secrets Manager client
