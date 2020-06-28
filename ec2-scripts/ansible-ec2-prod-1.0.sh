@@ -10,6 +10,7 @@ su ec2-user -l -c 'curl -s "https://get.sdkman.io" | bash && source .bashrc && s
 # Configure/install custom software
 cd /home/ec2-user
 git clone https://github.com/atthekev-in/module-5.git
+mv ~/module-5 ~/java-image-gallery
 chown -R ec2-user:ec2-user java-image-gallery
 
 CONFIG_BUCKET="s3://edu.au.cc.kzw0068.image-gallery-config"
