@@ -1,0 +1,52 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create Public Network ACL
+      ec2_vpc_nacl:
+        vpc_id: "{{ vpc.vpc.id }}"
+        name: M5 Public NACL
+        subnets: "{{ public_subnet.subnet.id }}"
+        tags:
+           Module: 5
+        ingress:
+            # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
+            #                                             port from, port to
+            - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+            - [200, 'tcp', 'allow', '76.104.232.35/32', null, null, 5000, 5000]
+            - [300, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+            - [400, 'tcp', 'allow', '24.196.25.139/32', null, null, 5000, 5000]
+            - [500, 'tcp', 'allow', '24.239.105.213/32', null, null, 5000, 5000]
+            - [600, 'tcp', 'allow', '0.0.0.0/0', null, null, 25, 25]
+            - [700, 'tcp', 'allow', '76.104.232.35/32', null, null, 80, 80]
+            - [800, 'tcp', 'allow', '76.104.232.35/32', null, null, 443, 443]
+            - [900, 'tcp', 'allow', '24.196.25.139/32', null, null, 443, 443]
+            - [1000, 'tcp', 'allow', '24.196.25.139/32', null, null, 80, 80]
+            - [1100, 'tcp', 'allow', '24.239.105.213/32', null, null, 443, 443]
+            - [1200, 'tcp', 'allow', '24.239.105.213/32', null, null, 80, 80]
+        egress:
+            - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+            - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443]
+            - [300, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+            - [400, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+            - [500, 'tcp', 'allow', '10.10.0.0/16', null, null, 5432, 5432]
+        state: 'present'
+    - name: Create Private Network ACL
+      ec2_vpc_nacl:
+        vpc_id: "{{ vpc.vpc.id }}"
+        name: M5 Private NACL
+        subnets: [ "{{ private_subnet1.subnet.id }}", "{{ private_subnet2.subnet.id }}" ]
+        tags:
+           Module: 5
+        ingress:
+            # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
+            #                                             port from, port to
+            - [100, 'tcp', 'allow', '10.10.0.0/16', null, null, 5432, 5432]
+            - [200, 'tcp', 'allow', '10.10.0.0/16', null, null, 22, 22]
+            - [300, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+            - [400, 'tcp', 'allow', '10.10.0.0/16', null, null, 443, 443]
+        egress:
+            - [100, 'tcp', 'allow', '10.10.0.0/16', null, null, 1024, 65535]
+            - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443]
+            - [300, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+        state: 'present'

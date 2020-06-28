@@ -1,0 +1,27 @@
+---
+#create vpc and subnets
+- import_playbook: create_vpc.yaml
+#create internet gateway, nat
+- import_playbook: create_igw_nat.yaml
+#create route tables and acls
+- import_playbook: create_route_tbl.yaml
+- import_playbook: create_nacl.yaml
+#create security groups
+- import_playbook: create_security_groups.yaml
+#create endpoints  !!!! NOT NEEDED
+
+#create rds subnet group
+#create rds instance
+- import_playbook: create_rds.yaml
+# create iam user and add to launch tempate !!!! NOT DONE
+
+#create launch templates
+- import_playbook: create_launch_template.yaml
+#create target group
+- import_playbook: create_target_group.yaml
+#create load balancer
+- import_playbook: create_nlb.yaml
+#create autoscale groups
+- import_playbook: create_autoscale_group.yaml
+#create ec2 instances
+

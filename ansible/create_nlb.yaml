@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+  gather_facts: 'no'
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - name: Get elastic eip
+      ec2_eip_info:
+        filters:
+          tag:Name: M5-EIP
+      register: eip1
+    - name: Create Network Load Balancer
+      elb_network_lb:
+        name: M5-NLB
+        subnet_mappings:
+          - SubnetId: "{{ public_subnet.subnet.id }}"
+            AllocationId: "{{ eip1.addresses[0].allocation_id }}"
+        listeners:
+          - Protocol: TCP # Required. The protocol for connections from clients to the load balancer (TCP or TLS) (case-sensitive).
+            Port: 80 # Required. The port on which the load balancer is listening.
+            DefaultActions:
+              - Type: forward # Required. Only 'forward' is accepted at this time
+                TargetGroupName: M5-target-group # Required. The name of the target   group
+    #      - Protocol: TLS # Required. The protocol for connections from clients to the load balancer (TCP or TLS) (case-sensitive).
+    #        Port: 443 # Required. The port on which the load balancer is listening.
+    #        Certificates:
+    #          - CertificateArn: "{{  }}"
+            DefaultActions:
+              - Type: forward # Required. Only 'forward' is accepted at this time
+                TargetGroupName: M5-target-group # Required. The name of the target group
+        state: present

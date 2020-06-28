@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create Auto-scale Group
+      ec2_asg:
+        name: M5-ASG
+        availability_zones: [ 'us-east-2b'  ]
+        launch_template:
+            launch_template_name: M5_template
+        min_size: 1
+        max_size: 2
+        desired_capacity: 1
+        vpc_zone_identifier: "{{ public_subnet.subnet.id }}"
+        tags:
+          - Name: M5-asg-instance
+        health_check_type: ELB
+        target_group_arns: "{{ target_group.target_group_arn }}"
+        wait_for_instances: no
+        state: present

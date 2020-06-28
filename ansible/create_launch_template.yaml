@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create an ec2 launch template
+      ec2_launch_template:
+        name: "M5_template"
+        image_id: "ami-026dea5602e368e96"
+        instance_type: t3.micro
+        iam_instance_profile: image-gallery-server-role
+        tags:
+          Name: M5-asg-server
+        key_name: demo1key
+        network_interfaces:
+           - device_index: 0
+             associate_public_ip_address: yes
+             groups:
+             - "{{ postgres_tag_sg.group_id }}"
+             - "{{ nginx_sg.group_id }}"
+             - "{{ dev_sg.group_id }}"
+        user_data: IyEvdXNyL2Jpbi9iYXNoCgoKZXhwb3J0IElNQUdFX0dBTExFUllfQk9PVFNUUkFQX1ZFUlNJT049IjEuMCIKYXdzIHMzIGNwIHMzOi8vZWR1LmF1LmNjLmt6dzAwNjguaW1hZ2UtZ2FsbGVyeS1jb25maWcvZWMyLXByb2QtbGF0ZXN0LnNoIC4vCi91c3IvYmluL2Jhc2ggZWMyLXByb2QtbGF0ZXN0LnNo

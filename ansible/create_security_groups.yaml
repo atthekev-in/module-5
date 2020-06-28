@@ -1,0 +1,95 @@
+---
+- hosts: localhost
+  gather_facts: 'no'
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - name: Create security group for postgres
+      ec2_group:
+          name: m5-postgres-sg
+          description: sg with rule for postgres
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules:
+            - proto: tcp
+              ports:
+              - 5432
+              rule_desc: allow inbound port 5432
+      register: postgres_sg
+    - name: Create security group for postgres tag
+      ec2_group:
+          name: m5-postgres-tag-sg
+          description: sg with rule for postgres tag
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules_egress:
+            - proto: tcp
+              ports:
+              - 5432
+              group_name: m5-postgres-sg
+              rule_desc: allow outbound
+      register: postgres_tag_sg
+    - name: edit security group for postgres
+      ec2_group:
+          name: m5-postgres-sg
+          description: sg with rule for postgres
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules:
+            - proto: tcp
+              ports:
+              - 5432
+              group_name: m5-postgres-tag-sg
+              rule_desc: allow all on port 5432
+    - name: Create security group for nginx servers
+      ec2_group:
+          name: m5-nginx-servers-sg
+          description: sg with rule for nginx
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules:
+            - proto: tcp
+              ports:
+              - 22
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on port 22
+            - proto: tcp
+              ports:
+              - 80
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on port 80
+            - proto: tcp
+              ports:
+              - 443
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on port 443
+      register: nginx_sg
+    - name: Create security group for m5 development
+      ec2_group:
+          name: m5-development-sg
+          description: sg with rule for development
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules:
+            - proto: tcp
+              ports:
+              - 22
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on port 22
+            - proto: tcp
+              ports:
+              - 80
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on port 80
+            - proto: tcp
+              ports:
+              - 5000
+              cidr_ip: 76.104.232.35/32
+              rule_desc: allow on port 5000
+            - proto: tcp
+              ports:
+              - 5000
+              cidr_ip: 24.196.25.139/32
+              rule_desc: allow on port 5000
+            - proto: tcp
+              ports:
+              - 5000
+              cidr_ip: 24.196.25.139/32
+              rule_desc: allow on port 5000
+      register: dev_sg

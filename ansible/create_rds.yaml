@@ -1,0 +1,38 @@
+- hosts: localhost
+  gather_facts: 'no'
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - rds_subnet_group:
+        state: present
+        name: M5-subnet-group
+        description: M5 subnet group for Postgres
+        subnets:
+          - "{{ private_subnet1.subnet.id }}"
+          - "{{ private_subnet2.subnet.id }}"
+    - local_action:
+       module: rds
+       command: restore
+       snapshot: m5-snapshot
+       instance_name: M5-database
+       region: us-east-2
+       zone: us-east-2c
+       subnet: M5-subnet-group
+       publicly_accessible: no
+       wait: no
+       wait_timeout: 600
+       tags:
+           Name: M5_db
+      register: rds
+    - rds:
+           command: modify
+           instance_name: M5-database
+           vpc_security_groups:
+             - "{{ postgres_sg.group_id }}"
+    - name: Add endpoint url to AWS Secrets Manager
+      aws_secret:
+        name: 'sec-db-url'
+        state: present
+        secret_type: 'string'
+        secret: "{{ rds.instance.endpoint }}"

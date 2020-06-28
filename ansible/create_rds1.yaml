@@ -1,0 +1,27 @@
+- hosts: localhost
+  gather_facts: 'no'
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - rds_subnet_group:
+        state: present
+        name: M5-subnet-group
+        description: M5 subnet group for Postgres
+        subnets:
+          - "{{ private_subnet1.subnet.id }}"
+          - "{{ private_subnet2.subnet.id }}"
+    - rds:
+        command: create
+        instance_name: Module5
+        db_engine: postgres
+        size: 10
+        instance_type: db.t2.micro
+        subnet: M5-subnet-group
+        security_groups:
+        
+        db_name: image_gallery
+        username: postgres
+        password: test1234
+    
+       

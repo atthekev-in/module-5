@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: 'no'
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - elb_target_group:
+        name: M5-target-group
+        protocol: tcp
+        port: 80
+        vpc_id: "{{ vpc.vpc.id }}"
+        health_check_path: /
+        stickiness_type: source_ip
+        stickiness_enabled: no
+        state: present
+      register: target_group

@@ -1,0 +1,45 @@
+---
+- hosts: localhost
+  gather_facts: no
+  module_defaults:
+    group/aws:
+      region: us-east-2
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+       name: Module5
+       cidr_block: 10.10.0.0/16
+       tags:
+        Module: 5
+       state: present
+      register: vpc
+    - name: Create public subnet
+      ec2_vpc_subnet: 
+        vpc_id: "{{ vpc.vpc.id }}"
+        az: "us-east-2b"
+        tags:
+          Name: Module5 public subnet
+          Module: 5
+        cidr: 10.10.1.0/24
+        state: present
+      register: public_subnet
+    - name: Create private subnet
+      ec2_vpc_subnet: 
+        vpc_id: "{{ vpc.vpc.id }}"
+        az: "us-east-2b"
+        tags:
+          Name: Module5 private subnet
+          Module: 5
+        cidr: 10.10.2.0/24
+        state: present
+      register: private_subnet1
+    - name: Create private subnet
+      ec2_vpc_subnet:
+        vpc_id: "{{ vpc.vpc.id }}"
+        az: "us-east-2c"
+        tags:
+          Name: Module5 private subnet 2
+          Module: 5
+        cidr: 10.10.3.0/24
+        state: present
+      register: private_subnet2
