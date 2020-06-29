@@ -20,11 +20,22 @@ public class UserApp {
     DB db = new DB();
 
     public void addRoutes() {
+        get("/", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+         //   ArrayList<User> users = db.getUsernameAndFullName();
+           // model.put("users", users);
+            return new HandlebarsTemplateEngine().render(new ModelAndView(model, "home.hbs"));
+        });
+        
         get("/admin", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
             ArrayList<User> users = db.getUsernameAndFullName();
             model.put("users", users);
             return new HandlebarsTemplateEngine().render(new ModelAndView(model, "admin.hbs"));
+        });
+        get("/login", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            return new HandlebarsTemplateEngine().render(new ModelAndView(model, "login.hbs"));
         });
         get("/admin/addUser", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
@@ -63,6 +74,19 @@ public class UserApp {
             return "deleted user";
 
         });
+        post("/login", (req, res) -> {
+            String username = req.queryParams("username");
+            User user = db.getUser(username);
+            if (user == null || !user.getPassword().equals(req.queryParams("password"))) {
+                res.redirect("/login");
+                
+            } else {
+                req.session().attribute("user", username);
+                res.redirect("/");
+            }
+            return "";
+        });
+
 
     }
 

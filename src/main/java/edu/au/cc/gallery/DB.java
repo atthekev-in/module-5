@@ -35,6 +35,22 @@ public class DB {
 
 	}
 
+	public User getUser(String username) throws SQLException {
+		String sql = "select * from users where username = ?;";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setString(1, username);
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+			User user = new User(rs.getString("username"), rs.getString("password"), rs.getString("full_name"));
+			return user;
+		} else {
+			return null;
+		}
+
+	}
+
+
+
 	public ArrayList<User> getUsernameAndFullName() throws SQLException {
 		String sql = "select username, full_name from users;";
 		ArrayList<User> userData = new ArrayList<>();
